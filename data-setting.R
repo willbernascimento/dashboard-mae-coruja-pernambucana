@@ -51,3 +51,15 @@ mortalidade_infantil_municipios_pe <-
 mortalidade_infantil_municipios %>% 
   filter(sigla_uf == 'PE') %>% 
   select(ano, nome_municipio, obitos_infantis, taxa_mortalidade_infantil)
+
+
+
+
+## ------------ [Mortalidade Materna - Municipios] ------------
+
+mortalidade_materna_municipios <- readRDS('dados/df_mortalidade_materna_BR_MUNICIPIOS.rds')
+
+mortalidade_materna_municipios_pe <- 
+  mortalidade_materna_municipios %>% 
+  filter(sigla_uf == 'PE') %>% 
+  select(ano, nome_municipio, obitos_maternos, taxa_mortalidade_materna)
