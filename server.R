@@ -55,9 +55,7 @@ server <- function(input, output) {
             axis.text.x = element_text(angle = 45),
             legend.position = 'top')+
       labs(y='RMM por 100.000NV', color='Localização')
-    
-    
-    #hist(histdata)
+
   })
   
   output$plot2 <- renderPlot({
@@ -85,54 +83,102 @@ server <- function(input, output) {
   })
 
   
-  ## [Mortalidade Infantil] Infantil -----------
+## [Mortalidade Infantil] Infantil -----------
   
-  
-  plotData_tx_mi_estado <- reactive({
-    
-    mortalidade_infantil_municipios_pe %>% 
-      filter(nome_municipio  == input$select_cidade_infantil)
+
+plotData_tx_mi_estado <- reactive({
+
+    mortalidade_infantil_municipios_pe %>%
+      filter(nome_municipio  == input$select_cidade_infantil) %>% 
+      filter(ano %in% c(input$slider_cidade_infantil[1]:input$slider_cidade_infantil[2]))
   })
+
+output$value <- renderPrint({ input$select_cidade_infantil })
   
-  #output$value <- renderPrint({ input$select_cidade_infantil })
-  output$plot_cidade_mi <- renderPlot({
-    
+output$plot_cidade_mi <- renderPlot({
+
     ggplot(plotData_tx_mi_estado(), aes(ano, taxa_mortalidade_infantil, group=1)) +
-      geom_line(size=1,color='steelblue') + 
-      geom_point(size=1.5,color='steelblue') + 
+      geom_line(size=1,color='steelblue') +
+      geom_point(size=1.5,color='steelblue') +
       geom_vline(xintercept = '2008', linetype='dotted') +
-      theme_minimal(base_size = 14) + 
+      theme_minimal(base_size = 14) +
       theme(axis.title.x = element_blank(),
             axis.text.x = element_text(angle = 45),
             legend.position = 'top')+
       labs(y='Mortalidade infantil por 1.000 NV')
-    
-    
-    #hist(histdata)
   })
   
-  output$tabela_cidade_mi = DT::renderDataTable({
-    DT::datatable(plotData_tx_mi_estado() %>% 
-      mutate(taxa_mortalidade_infantil = round(taxa_mortalidade_infantil,2)) %>% 
-      rename(`Mortalidade Infantil` = taxa_mortalidade_infantil, 
-             `Óbitos Infantis`= obitos_infantis, 
+  
+output$tabela_cidade_mi = DT::renderDataTable({
+    DT::datatable(plotData_tx_mi_estado() %>%
+      mutate(taxa_mortalidade_infantil = round(taxa_mortalidade_infantil,2)) %>%
+      rename(`Mortalidade Infantil` = taxa_mortalidade_infantil,
+             `Óbitos Infantis`= obitos_infantis,
              `Município` = nome_municipio,
-             Ano = ano), options = list(pageLength=8, searching=FALSE),)
+             Ano = ano), options = list(pageLength=24, searching=FALSE),)
   })
   
-  output$info_box_MI_cidade_ABS <- renderInfoBox({
-    value = tags$p(style = "font-size: 25px;", plotData_tx_mi_estado() %>% 
-                     filter(ano == max(as.numeric(as.character(ano)))) %>% 
+output$info_box_MI_cidade_ABS <- renderInfoBox({
+    value = tags$p(style = "font-size: 25px;", plotData_tx_mi_estado() %>%
+                     filter(ano == max(as.numeric(as.character(ano)))) %>%
                      select(obitos_infantis))
     infoBox("Óbitos infantis", value, icon = icon("book-medical"))
   })
   
-  output$info_box_MI_cidade_TAX <- renderInfoBox({
-    value = tags$p(style = "font-size: 25px;", plotData_tx_mi_estado() %>% 
-                     filter(ano == max(as.numeric(as.character(ano)))) %>% 
-                     select(taxa_mortalidade_infantil)%>% round(.,2)) 
+output$info_box_MI_cidade_TAX <- renderInfoBox({
+    value = tags$p(style = "font-size: 25px;", plotData_tx_mi_estado() %>%
+                     filter(ano == max(as.numeric(as.character(ano)))) %>%
+                     select(taxa_mortalidade_infantil)%>% round(.,2))
     infoBox("Taxa de mortalidade", value, icon = icon("book-medical"))
   })
+
   
+## [Mortalidade Infantil] Infantil -----------
+
+plotData_tx_mm_estado <- reactive({
+    
+    mortalidade_materna_municipios_pe %>%
+      filter(nome_municipio  == input$select_cidade_materna) %>% 
+      filter(ano %in% c(input$slider_cidade_materna[1]:input$slider_cidade_materna[2]))
+  })
+  
+  #output$value <- renderPrint({ input$select_cidade_materna })
+  
+  output$plot_cidade_mm <- renderPlot({
+    
+    ggplot(plotData_tx_mm_estado(), aes(ano, taxa_mortalidade_materna, group=1)) +
+      geom_line(size=1,color='steelblue') +
+      geom_point(size=1.5,color='steelblue') +
+      geom_vline(xintercept = '2008', linetype='dotted') +
+      theme_minimal(base_size = 14) +
+      theme(axis.title.x = element_blank(),
+            axis.text.x = element_text(angle = 45),
+            legend.position = 'top')+
+      labs(y='Mortalidade Materna por 1.000 NV')
+  })
+  
+  
+  output$tabela_cidade_mm = DT::renderDataTable({
+    DT::datatable(plotData_tx_mm_estado() %>%
+                    mutate(taxa_mortalidade_materna = round(taxa_mortalidade_materna,2)) %>%
+                    rename(`Mortalidade Materna` = taxa_mortalidade_materna,
+                           `Óbitos Infantis`= obitos_maternos,
+                           `Município` = nome_municipio,
+                           Ano = ano), options = list(pageLength=24, searching=FALSE),)
+  })
+  
+  output$info_box_MM_cidade_ABS <- renderInfoBox({
+    value = tags$p(style = "font-size: 25px;", plotData_tx_mm_estado() %>%
+                     filter(ano == max(as.numeric(as.character(ano)))) %>%
+                     select(obitos_maternos))
+    infoBox("Óbitos maternos", value, icon = icon("book-medical"))
+  })
+  
+  output$info_box_MM_cidade_TAX <- renderInfoBox({
+    value = tags$p(style = "font-size: 25px;", plotData_tx_mm_estado() %>%
+                     filter(ano == max(as.numeric(as.character(ano)))) %>% # seleciona o ano mais recente (MAX)
+                     select(taxa_mortalidade_materna)%>% round(.,2))
+    infoBox("Taxa de mortalidade", value, icon = icon("book-medical"))
+  })
   
 }
