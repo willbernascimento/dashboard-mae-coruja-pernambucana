@@ -48,7 +48,7 @@ body <- dashboardBody(
     tabItem(tabName = 'infantil',
             fluidRow(
               fluidRow(column(12, box(width = 12,
-                title = 'Números para 2019', status = "primary",solidHeader = TRUE,
+                title = 'Números mais recentes', status = "primary",solidHeader = TRUE,
                 infoBoxOutput("info_box_MI_cidade_ABS"),
                 infoBoxOutput("info_box_MI_cidade_TAX"),
                 height = 150
@@ -86,7 +86,7 @@ body <- dashboardBody(
             
             fluidRow(
               fluidRow(column(12, box(width = 12,
-                                      title = 'Números para 2019', status = "primary",solidHeader = TRUE,
+                                      title = 'Números mais recentes', status = "primary",solidHeader = TRUE,
                                       infoBoxOutput("info_box_MM_cidade_ABS"),
                                       infoBoxOutput("info_box_MM_cidade_TAX"),
                                       height = 150
