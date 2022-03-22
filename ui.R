@@ -92,7 +92,6 @@ body <- dashboardBody(
                                       height = 150
               ))),
               column(12,
-                     "Fluid 12",
                      fluidRow(
                        column(width = 6,
                               fluidRow(box(width = 12, title = "Filtro por cidade e ano", solidHeader = TRUE, status = "primary", 
