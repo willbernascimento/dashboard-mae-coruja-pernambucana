@@ -1,7 +1,7 @@
 library(stringr)
 
 dtsus.extractcode <- function(x){
-  # Recebe uma coluna de codigo do data sus e retorna apenas o código
+  # Recebe uma coluna de codigo do data sus e retorna apenas o cÃ³digo
   
   cod_municipio <- stringr::str_extract(x, pattern = "\\d{6}")
   return(cod_municipio)
@@ -22,12 +22,12 @@ dtsus.obtInf.mes <- function(ano = 2019) {
   ano <- as.character(ano)
   
   
-  # baixa as tabelas de mortalidade por mês
+  # baixa as tabelas de mortalidade por mÃªs
   
   lista <- list()
   for (i in ano) {
     lista[[i]] <-
-      datasus::sim_inf10_mun(coluna = "Mês do Óbito", periodo = i)
+      datasus::sim_inf10_mun(coluna = "MÃªs do Ã“bito", periodo = i)
     
   }
   
@@ -46,7 +46,7 @@ dtsus.obtInf.mes <- function(ano = 2019) {
   # junta todos os bancos de dados, cria uma coluna com os anos e remove a linha de total
   banco <- do.call("rbind", nova_lista)
   banco$ano <- str_extract(rownames(banco), "\\d{4}")
-  banco <- banco[banco$Município != "TOTAL", ]
+  banco <- banco[banco$MunicÃ­pio != "TOTAL", ]
   
   return(banco)
 }
