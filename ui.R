@@ -21,6 +21,13 @@ sidebar <- dashboardSidebar(
       #          tabName = 'c',
       #          icon = icon('fas fa-chart-line'))
     ),
+    menuItem('Indicadores', tabName = 'indicadores', icon = icon('fa-solid fa-file-medical'),
+             menuItem('CNES', tabName = 'cnes', icon = icon('fa-solid fa-hospital')),
+             menuItem('etc',tabName = 'etc',icon = icon('fa-solid fa-hospital'))#,
+             # menuItem('c',
+             #          tabName = 'c',
+             #          icon = icon('fas fa-chart-line'))
+    ),
     menuItem('Sobre', tabName = 'sobre', icon = icon('address-card'))
   )
 )
@@ -92,7 +99,6 @@ body <- dashboardBody(
                                       height = 150
               ))),
               column(12,
-                     "Fluid 12",
                      fluidRow(
                        column(width = 6,
                               fluidRow(box(width = 12, title = "Filtro por cidade e ano", solidHeader = TRUE, status = "primary", 
@@ -113,6 +119,42 @@ body <- dashboardBody(
             )
     ),
     
+## --------------------------------    
+    ## Tab de indicadores ##
+
+tabItem(tabName = 'cnes',
+
+        fluidRow(
+          fluidRow(column(12, box(width = 12,
+                                  title = 'Números para 2019', status = "primary",solidHeader = TRUE,
+                                  infoBoxOutput("info_box_x1"),
+                                  infoBoxOutput("info_box_x2"),
+                                  height = 150
+          ))),
+          column(12,
+                 "Fluid 12",
+                 fluidRow(
+                   column(width = 6,
+                          fluidRow(box(width = 12, title = "Filtro por cidade e ano", solidHeader = TRUE, status = "primary", 
+                                       selectInput("", label = NULL, choices = unique(mortalidade_materna_municipios_pe$nome_municipio), 
+                                                   selected = 'Araripina'),
+                                       sliderInput("", "Selecione o ano:", 1996, 2019, value = c(1999, 2015))),
+                                   box(width = 12, plotOutput("", height="488px", brush = "plot_brush"), 
+                                       title = "Mortalidade Materna", solidHeader = TRUE, status = "primary")
+                          ),
+                          
+                   ),
+                   column(width = 6,
+                          box(width = NULL,  title = "Mortalidade Materna - Dados", solidHeader = TRUE, status = "primary",
+                              div(DT::dataTableOutput(""), style = "font-size:99%"))
+                   )
+                 )
+          )
+        )
+),
+    
+    
+## --------------------------------    
     tabItem(tabName = 'sobre', fluidRow(box(width = 12, status = 'info', htmlTemplate('about_page.html')))
     )
     
