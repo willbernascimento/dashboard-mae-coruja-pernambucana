@@ -4,6 +4,13 @@ library(tidyr)
 library(ggplot2)
 library(plotly)
 
+
+## CNES [Dados de Unidades e serviços hospitalares] -------
+dados_long <- readRDS('dados/cnes-estabelecimentos/atendimento-prestado.rds')
+
+
+
+
 ## ---------- [CENARIO] comparacao brasil com pernambuco ----
 
 brasil <- readRDS(file = "dados/mortematerna/agregado_BR.rds")

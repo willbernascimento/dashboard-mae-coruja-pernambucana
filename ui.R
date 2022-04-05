@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyWidgets)
 library(shinydashboard)
 library(shinyalert)
 library(dplyr)
@@ -22,8 +23,8 @@ sidebar <- dashboardSidebar(
       #          icon = icon('fas fa-chart-line'))
     ),
     menuItem('Indicadores', tabName = 'indicadores', icon = icon('fa-solid fa-file-medical'),
-             menuItem('CNES', tabName = 'cnes', icon = icon('fa-solid fa-hospital')),
-             menuItem('etc',tabName = 'etc',icon = icon('fa-solid fa-hospital'))#,
+             menuItem('CNES', tabName = 'cnes', icon = icon('fa-solid fa-hospital'))#,
+             #menuItem('etc',tabName = 'etc',icon = icon('fa-solid fa-hospital'))#,
              # menuItem('c',
              #          tabName = 'c',
              #          icon = icon('fas fa-chart-line'))
@@ -118,7 +119,6 @@ body <- dashboardBody(
               )
             )
     ),
-    
 ## --------------------------------    
     ## Tab de indicadores ##
 
@@ -126,27 +126,35 @@ tabItem(tabName = 'cnes',
 
         fluidRow(
           fluidRow(column(12, box(width = 12,
-                                  title = 'Números para 2019', status = "primary",solidHeader = TRUE,
-                                  infoBoxOutput("info_box_x1"),
-                                  infoBoxOutput("info_box_x2"),
+                                  title = 'Números de estabelecimentos CNES em Pernambuco, 2021', status = "primary",solidHeader = TRUE,
+                                  infoBoxOutput("info_box_cnes_amb"),
+                                  infoBoxOutput("info_box_cnes_hos"),
+                                  infoBoxOutput("info_box_cnes_ger"),
                                   height = 150
           ))),
           column(12,
-                 "Fluid 12",
                  fluidRow(
                    column(width = 6,
-                          fluidRow(box(width = 12, title = "Filtro por cidade e ano", solidHeader = TRUE, status = "primary", 
-                                       selectInput("", label = NULL, choices = unique(mortalidade_materna_municipios_pe$nome_municipio), 
-                                                   selected = 'Araripina'),
-                                       sliderInput("", "Selecione o ano:", 1996, 2019, value = c(1999, 2015))),
-                                   box(width = 12, plotOutput("", height="488px", brush = "plot_brush"), 
-                                       title = "Mortalidade Materna", solidHeader = TRUE, status = "primary")
+                          fluidRow(box(width = 12, title = "Filtros", solidHeader = TRUE, status = "primary", 
+                                       selectInput("cnes_nome_cidade", label = NULL, choices = toupper(unique(dados_long$nome_municipio)),selected = 'ARARIPINA'),
+                                       checkboxGroupInput("cnesNivelAtencao_checkGroup", label = h3("Nível de atenção"), choices = list("Ambulatorial" = "Ambulatorial", "Hospitalar" = "Hospitalar"),
+                                                          selected = "Ambulatorial", inline = TRUE)
+                                       ),
+                                   box(width = 12, 
+                                       sliderTextInput("cnes_ano","Selecione o ano",choices =  sort(unique(dados_long$ano))),
+                                       plotlyOutput("cnes_NivelAtencao_barras", height="488px"), 
+                                       title = "Estabelecimentos por nível de atenção", solidHeader = TRUE, status = "primary"),
+                                   box(width = 12,
+                                       sliderInput("cnes_slider_ano", "Selecione o ano:", 2005, 2021, value = c(2010, 2020)),
+                                       plotlyOutput("cnes_NivelAtencao_linhas", height="488px"), 
+                                       title = "Estabelecimentos por nível de atenção no tempo", solidHeader = TRUE, status = "primary")
+                                   
                           ),
                           
                    ),
                    column(width = 6,
-                          box(width = NULL,  title = "Mortalidade Materna - Dados", solidHeader = TRUE, status = "primary",
-                              div(DT::dataTableOutput(""), style = "font-size:99%"))
+                          box(width = NULL,  title = "Estabelecimentos por nível de atenção - Dados", solidHeader = TRUE, status = "primary",
+                              div(DT::dataTableOutput("cnes_tabela_servicos"), style = "font-size:99%"))
                    )
                  )
           )
