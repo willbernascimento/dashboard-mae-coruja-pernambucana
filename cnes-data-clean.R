@@ -12,7 +12,7 @@ arquivos = dir('dados/cnes-estabelecimentos/atendimento-prestado/')
 dados <- 
   lapply(paste0('dados/cnes-estabelecimentos/atendimento-prestado/',arquivos), function(x) {
   dados <- read.csv(x,
-           header = F,
+           header = F,fileEncoding = 'Latin1',
            sep = ';',
            skip = 4) %>% 
     mutate(ano = str_extract(x, '\\d{4}'))
@@ -22,25 +22,25 @@ dados <-
 
 names(dados) <-
   c(
-    "Município",
+    "MunicÃ­pio",
     "Quantidade_Geral",
-    "AmbulatorialBásica_estadual",
-    "AmbulatorialBásica_municipal",
-    "AmbMédia_complex_estadual",
-    "AmbMédia_complex_municipal",
+    "AmbulatorialBÃ¡sica_estadual",
+    "AmbulatorialBÃ¡sica_municipal",
+    "AmbMÃ©dia_complex_estadual",
+    "AmbMÃ©dia_complex_municipal",
     "AmbAlta_complex_estadual",
     "AmbAlta_complex_municipal",
-    "HospMédia_complex_estadual",
-    "HospMédia_complex_municipal",
+    "HospMÃ©dia_complex_estadual",
+    "HospMÃ©dia_complex_municipal",
     "HospAlta_complex_estadual",
     "HospAlta_complex_municipal",
     "ano"
   )
 
-dados$codigo_municipio <- dtsus.extractcode(dados$Município)
-dados$nome_municipio <- toupper(dtsus.extractname(dados$Município))
-dados[dados == '-'] <- 0 # O DATASUS indica que - são 0 não aredondados
-dados$Município <- NULL
+dados$codigo_municipio <- dtsus.extractcode(dados$MunicÃ­pio)
+dados$nome_municipio <- toupper(dtsus.extractname(dados$MunicÃ­pio))
+dados[dados == '-'] <- 0 # O DATASUS indica que - s?o 0 n?o aredondados
+dados$MunicÃ­pio <- NULL
 
 dados[,2:11] <- sapply(dados[,2:11],as.numeric)
 
@@ -55,31 +55,39 @@ dados_long <-
     values_to = 'Quantidade'
   )
 
+
+dados_long <- 
+  dados_long %>%
+  mutate(nivel_atencao2 = case_when(
+    nivel_atencao == 'AmbAlta_complex_estadual' ~ 'Amb. Alta complexidade estadual',
+    nivel_atencao == 'AmbAlta_complex_municipal' ~ 'Amb. Alta complexidade municipal',
+    nivel_atencao == 'AmbMÃ©dia_complex_estadual' ~ 'Amb. MÃ©dia complexidade estadual',
+    nivel_atencao == 'AmbMÃ©dia_complex_municipal' ~'Amb. MÃ©dia complexidade municipal' ,
+    nivel_atencao == 'AmbulatorialBÃ¡sica_estadual' ~ 'Amb. BÃ¡sica estadual',
+    nivel_atencao == 'AmbulatorialBÃ¡sica_municipal' ~ 'Amb. BÃ¡sica municipal',
+    nivel_atencao == 'HospAlta_complex_estadual' ~ 'Hosp. Alta complexidade estadual',
+    nivel_atencao == 'HospAlta_complex_municipal' ~ 'Hosp. Alta complexidade municipal',
+    nivel_atencao == 'HospMÃ©dia_complex_estadual' ~ 'Hosp. MÃ©dia complexidade estadual',
+    nivel_atencao == 'HospMÃ©dia_complex_municipal' ~ 'Hosp MÃ©dia complexidade municipal',
+    nivel_atencao == 'Quantidade_Geral' ~ 'Quantidade geral', TRUE ~ 'ERRO'
+  )) %>% 
+  mutate(
+    nivel_atencao_id = ifelse(grepl(pattern = 'Amb.',x = nivel_atencao2) == TRUE, 'Ambulatorial', ifelse(grepl(pattern = 'Hosp.',x = nivel_atencao2) == TRUE, 'Hospitalar',nivel_atencao2 ))
+  )
+
+
 saveRDS(dados_long, 'dados/cnes-estabelecimentos/atendimento-prestado.rds')
 
-## criar filtro para cidade e ano
-dados_long %>% 
-  filter(nome_municipio == 'ARARIPINA' & ano == 2005) %>% 
-  ggplot(aes(nivel_atencao, Quantidade, fill=nivel_atencao))+
-  geom_bar(stat = 'identity')+
-  theme_minimal()+
-  theme(legend.position = 'none')+
-  coord_flip()
-  
 
 
-## filtro para a cidade, tipo de atencao -> slide de ano
-ggplotly(
+
+
+## graficos ------------
+
+dados_long <- readRDS('dados/cnes-estabelecimentos/atendimento-prestado.rds')
+
+dados_nivel_atencao_pe <- 
 dados_long %>% 
-  filter(nome_municipio == 'ARARIPINA') %>% 
-  ggplot(aes(ano, Quantidade, group=nivel_atencao, color=nivel_atencao))+
-  geom_line(size=1)+
-  geom_point()+
-  theme_minimal()+
-  theme(legend.position = 'top', axis.title.x = element_blank())) %>%
-  layout(legend = list(
-    title='',
-    orientation = "h"
-  )
-  )
-  
+  filter(ano == 2021) %>% 
+  group_by(nivel_atencao_id) %>% 
+  summarise(total = sum(Quantidade))
