@@ -9,3 +9,10 @@ A dashboard pode ser acessada em [https://willbernascimento.shinyapps.io/dashboa
 # Fonte de dados
 
 Os dados utilizados são oriundos do DATASUS. Fazemos algumas transformações e cálculos básicos dos indicadores.
+
+# Como executar o projeto
+
+Para vizualizar a dashboard basta abrir o [link](https://willbernascimento.shinyapps.io/dashboard-mae-coruja/) em seu navegador. Contudo, caso você queira executá-lo no seu computador será necessário instalar o R e o Rstudio, bem como aS dependências necessárias.
+Você pode seguir os seguintes passos:
+
+- Em desenvolvimento
